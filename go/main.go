@@ -49,13 +49,9 @@ func getAvailableRooms(w http.ResponseWriter, r *http.Request) {
 func erlangKL(lambda float64, k int) float64 {
 	g := 0.0
 	for i := 0; i < k; i++ {
-		g += exponential(lambda)
+		g += (rand.ExpFloat64() / lambda)
 	}
 	return g
-}
-
-func exponential(lambda float64) float64 {
-	return rand.ExpFloat64() / lambda
 }
 
 func main() {
@@ -72,7 +68,7 @@ func main() {
 	logger.Info("start http server")
 
 	router := http.NewServeMux()
-	router.HandleFunc("/api/v1/available-rooms", getAvailableRooms)
+	router.HandleFunc("/api/go/slow", getAvailableRooms)
 
 	srv := http.Server{
 		ReadHeaderTimeout: time.Second * 5,
