@@ -5,6 +5,9 @@ import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.core.IntervalFunction;
+import io.github.resilience4j.ratelimiter.RateLimiter;
+import io.github.resilience4j.ratelimiter.RateLimiterConfig;
+import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
@@ -51,7 +54,8 @@ public class ReservationService {
             .maxAttempts(3) // 最大リトライ回数
             // .waitDuration(Duration.ofMillis(500)) // 固定の待ち時間
             .intervalFunction(IntervalFunction.ofExponentialBackoff(IntervalFunction.DEFAULT_INITIAL_INTERVAL,
-                    IntervalFunction.DEFAULT_MULTIPLIER, 1000)) // リトライ回数ごとの待ち時間の決定関数をセット
+                    IntervalFunction.DEFAULT_MULTIPLIER,
+                    1000)) // リトライ回数ごとの待ち時間の決定関数として exponential backoff を選択
             .retryOnResult(result -> result == null) // 結果が null だったときにリトライする
             //            .intervalFunction(numAttempts -> {
             //                log.info("numAttempts={}", numAttempts);
@@ -59,6 +63,13 @@ public class ReservationService {
             //            }) //
             .retryExceptions(IOException.class) // リトライする例外を定義
             .build());
+
+    private final RateLimiterRegistry rateLimiterRegistry = RateLimiterRegistry.of(
+            RateLimiterConfig.custom() //
+                    .limitForPeriod(10) // limitRefreshPeriod における許可回数
+                    .limitRefreshPeriod(Duration.ofMillis(1000)) // カウントする期間
+                    .timeoutDuration(Duration.ofMillis(500)) // 許可を待つ最大時間
+                    .build());
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -80,7 +91,6 @@ public class ReservationService {
 
     private Room getAvailableRoom(Date beginDate) {
         var circuitBreaker = getCircuitBreaker();
-
         var callableWithCircuitBreaker = CircuitBreaker.decorateCallable(circuitBreaker, () -> {
             Request request = new Request.Builder().url(endpoint).build();
             try (Response response = client.newCall(request).execute()) {
@@ -93,10 +103,12 @@ public class ReservationService {
         });
 
         var retry = getRetry();
-
         var callableWithRetry = Retry.decorateCallable(retry, callableWithCircuitBreaker);
 
-        return Try.ofCallable(callableWithRetry).recover(exception -> null).get();
+        var rateLimiter = getRateLimiter();
+        var callableWithRateLimiter = RateLimiter.decorateCallable(rateLimiter, callableWithRetry);
+
+        return Try.ofCallable(callableWithRateLimiter).recover(exception -> null).get();
     }
 
     private CircuitBreaker getCircuitBreaker() {
@@ -105,5 +117,9 @@ public class ReservationService {
 
     private Retry getRetry() {
         return retryRegistry.retry("go/slow");
+    }
+
+    private RateLimiter getRateLimiter() {
+        return rateLimiterRegistry.rateLimiter("go/slow");
     }
 }

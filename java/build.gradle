@@ -1,7 +1,7 @@
 plugins {
-	id 'org.springframework.boot' version '2.6.4'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.6.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
 }
 
 group = 'com.example'
@@ -9,33 +9,36 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
 
-	// https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-circuitbreaker
-	implementation group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '1.7.1'
+    // https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-circuitbreaker
+    implementation group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '1.7.1'
 
-	// https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-retry
-	implementation group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '1.7.1'
+    // https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-retry
+    implementation group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '1.7.1'
 
-	// https://mvnrepository.com/artifact/org.apache.commons/commons-math3
-	implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    // https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-ratelimiter
+    implementation group: 'io.github.resilience4j', name: 'resilience4j-ratelimiter', version: '1.7.1'
 
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
