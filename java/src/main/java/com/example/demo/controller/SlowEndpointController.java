@@ -13,11 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/java/slow")
 public class SlowEndpointController {
 
-    @Data
-    public static class Temperature {
-
-        private double celsius;
-    }
+    public static record Temperature(double celsius) {}
 
     @GetMapping("")
     public Temperature get() {
@@ -28,9 +24,7 @@ public class SlowEndpointController {
 
         log.info("slow endpoint is requested: sleep={}", sleep);
 
-        var temperature = new Temperature();
-        temperature.celsius = 16.5;
-        return temperature;
+        return new Temperature(17.5);
     }
 
     private final ExponentialDistribution exponentialDistribution = new ExponentialDistribution(1.0);
