@@ -25,6 +25,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-circuitbreaker
 	implementation group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '1.7.1'
 
+	// https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-retry
+	implementation group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '1.7.1'
+
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-math3
 	implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
