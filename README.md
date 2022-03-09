@@ -1,32 +1,53 @@
 # レジリエンスプログラミングハンズオン
 
+このリポジトリは、2022年3月9日に42Tokyoで開催したレジリエンスプログラミングに関するハンズオンイベントのために作成したものです。
+
+## 環境について
+
+windows/mac ともに、Go 1.17 / JDK17 で作成しました。
+
 ```text
-├── README.md
-├── go
-│   └── main.go
-└── java
+% go version
+go version go1.17.8 darwin/amd64
 ```
 
-## Goによる遅いAPIエンドポイント
-
 ```text
+% java -version
+openjdk version "17.0.2" 2022-01-18 LTS
+OpenJDK Runtime Environment Microsoft-30338 (build 17.0.2+8-LTS)
+OpenJDK 64-Bit Server VM Microsoft-30338 (build 17.0.2+8-LTS, mixed mode, sharing)
+```
+
+## 実行方法
+
+### Go
+
+```
 cd go
-go run main.go -c 2
+go get tidy
+go run main.go
 ```
 
-`-c` で同時に接続することができるクライアント数を制限することができる。
+tcp/9081 で HTTP サーバーが立ち上がります。
 
-```http
-GET /api/v1/slow HTTP/1.1
-Host: localhost:9081
+エンドポイントとして以下の2つが存在します。
 
-HTTP/1.1 200 OK
-Content-Type: application/json
-Date: Tue, 08 Mar 2022 08:47:35 GMT
-Content-Length: 65
+- /api/go/slow 遅いエンドポイント
+- /api/go/test 内部で http://localhost:9082/api/java/slow を呼び出すエンドポイント
 
-[{"id":123,"name":"会議室A","description":"最大人数5人"}]
+起動時に `-c 2` のように指定することでHTTPの並行性を制限することができます。小さな数字を指定するとサーバーが高負荷な状態をシミュレートすることができます。
+
+### Java
+
+```
+cd java
+./gradlew bootJar
+java -jar build/libs/demo-0.0.1-SNAPSHOT.jar
 ```
 
-## Spring Boot から Go のサービスを呼び出す
+tcp/9082 で HTTP サーバーが立ち上がります。
 
+エンドポイントとして以下の2つが存在します。
+
+- /api/java/slow 遅いエンドポイント
+- /api/java/test 内部で http://localhost:9081/api/go/slow を呼び出すエンドポイント
