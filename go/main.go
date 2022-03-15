@@ -43,6 +43,10 @@ func init() {
 		failureRatio := float64(counts.TotalFailures) / float64(counts.Requests)
 		return counts.Requests >= 10 && failureRatio >= 0.5
 	}
+	settings.OnStateChange = func(name string, from, to gobreaker.State) {
+		logger.Info("gobreaker state changed",
+			zap.String("from", from.String()), zap.String("to", to.String()))
+	}
 	circuitBreaker = gobreaker.NewCircuitBreaker(settings)
 }
 
