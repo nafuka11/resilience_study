@@ -1,6 +1,6 @@
 # resilience_study
 
-このリポジトリは、2022年3月9日に開催された「実例で学ぶレジリエンスプログラミング教室」の [ハンズオン用のリポジトリ](https://github.com/nebosuke/resilience_study) のForkです。
+このリポジトリは、2022年3月9日に開催された「実例で学ぶレジリエンスプログラミング教室」の [ハンズオン用リポジトリ](https://github.com/nebosuke/resilience_study) のForkです。
 
 オリジナルのREADME.mdは [README_original.md](./README_original.md) にあります。
 
@@ -26,7 +26,7 @@
    cd go
    go mod tidy
    ```
-1. 並行性制限してHTTPサーバを起動する
+1. 並行性を制限してHTTPサーバを起動する
    ```bash
    go run main.go -c 10
    ```
@@ -35,7 +35,6 @@
    k6 run ./k6_test.js --vus 10 --duration 10s
    ```
    - `--vus 10` は同時接続数10、`--duration 10s` はテストの実行時間10秒の指定です。
-   - 
 1. HTTPサーバが起動されているTerminalで以下のようなログ出力がされ、  
    CircuitBreakerのstateがOpenになっていることを確認する
    ```json
@@ -51,7 +50,7 @@
    +       body, err := weak_get("http://localhost:9082/api/java/slow")
    ```
    - 本当はコマンドライン引数等で切り替えられた方がいいのですが、コード書き換えで対応しています。
-1. 並行性制限してHTTPサーバを起動する
+1. 並行性を制限してHTTPサーバを起動する
    ```bash
    go run main.go -c 10
    ```
